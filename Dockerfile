@@ -1,12 +1,13 @@
-# Stage 1: Build the Java application
-FROM maven:3.9-eclipse-temurin-21 AS build
+# Stage 1: Build using JDK 25 with Maven
+FROM eclipse-temurin:25-jdk AS build
 WORKDIR /app
-COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Run the built JAR
-FROM eclipse-temurin:21-jre
+# Stage 2: Run on JRE 25
+FROM eclipse-temurin:25-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 ENV PORT=8080
